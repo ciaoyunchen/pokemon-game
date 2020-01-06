@@ -1,0 +1,164 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>Document</title>
+    <style>
+        body {
+            margin: 0;
+            padding: 0;
+        }
+
+        #loading {
+            width: 100vw;
+            height: 100vh;
+            background-image: url(./cover.jpg);
+        }
+        #game {
+            width: 100vw;
+            height: 100vh;
+            background: #99f092;
+            cursor: url(./pokeball.png) 50 50, auto;
+            overflow: hidden;
+            position: relative;
+            display: none;
+        }
+
+        #game img {
+            height: 150px;
+            position: absolute;
+        }
+
+        #record {
+            width: 115px;
+            height: 110px;
+            border: 1px solid #333;
+            border-radius: 20px;
+            box-shadow: 2px 2px 0px #333;
+            position: absolute;
+            bottom: 100px;
+            right: 100px;
+            text-align: center;
+            padding-top: 5px;
+        }
+
+        #start {
+            width: 80%;
+            height: 40px;
+            border: 3px solid white;
+            border-radius: 30px;
+            background: salmon;
+            font-size: 14px;
+            color: #333;
+        }
+    </style>
+</head>
+<body>
+    <div id="loading"></div>
+    <div id="game">
+        <div id="record">
+            <input type="button" value="開始遊戲" id="start"><br>
+            <div style="margin-top:5px; color:#333">分數: <span id="score">0</span> 分</div>
+            <div style="margin-top:5px; color:#333">剩餘: <span id="second">10</span> 秒</div>
+        </div>
+    </div>
+    
+    <script src="./jquery-3.4.1.min.js"></script>
+    <script>
+        $(window).on('load', function(){
+            $("#loading").fadeOut(2000, function(){
+                $("#game").fadeIn();
+            })
+        })
+        $(function(){
+            let score = 0;
+            let second = 10;
+
+            let gametimer = 0;
+
+            let pkid = 0;
+
+            let rand = function(num){
+                return Math.round(Math.random()*num);
+            }
+
+            let move = function(id){
+                $(`#pk${id},#pkk${id},#pkkk${id},#pkkkk${id}`).animate({
+                    left: rand(100)+"%",
+                    top: rand(100)+"%"
+                }, 3000, function(){
+                    move(id);
+                })
+            }
+
+            $("#start").on("click",function(){
+                $(this).attr("disabled", true);
+
+                second = 10;
+                $("#second").text(second);
+                score = 0;
+                $("score").text(score);
+
+                gametimer = setInterval(function(){
+                    second--;
+                    $("#second").text(second);
+
+                    if(second == 0){
+                        clearInterval(gametimer);
+                        $("#start").attr("disabled", false);
+                        setTimeout(function(){
+                            alert("時間到");
+                            $("#game img").remove();
+                        }, 100)
+                    }
+
+                    let num = rand(16);
+                    if(num >= 0 && num < 5){
+                        $("#game").append(`<img src="./bulbasaur.png" id="pk${pkid}">`);
+                        $(`#pk${pkid}`).css({
+                            left: rand(100)+"%",
+                            top: rand(100)+"%"
+                            });
+                        move(pkid);
+                        pkid++;
+                    }else if(num >= 5 && num < 8){
+                        $("#game").append(`<img src="./pikachu.png" id="pkk${pkid}">`);
+                        $(`#pkk${pkid}`).css({
+                            left: rand(100)+"%",
+                            top: rand(100)+"%"
+                            });
+                        move(pkid);
+                        pkid++;
+                    }else if(num >= 8 && num < 11){
+                        $("#game").append(`<img src="./charmander.png" id="pkkk${pkid}">`);
+                        $(`#pkkk${pkid}`).css({
+                            left: rand(100)+"%",
+                            top: rand(100)+"%"
+                            });
+                        move(pkid);
+                        pkid++;
+                    }else if(num >= 11){
+                        $("#game").append(`<img src="./squirtle.png" id="pkkkk${pkid}">`);
+                        $(`#pkkkk${pkid}`).css({
+                            left: rand(100)+"%",
+                            top: rand(100)+"%"
+                            });
+                        move(pkid);
+                        pkid++;
+                    }
+                }, 1000)
+            })
+
+            $("#game").on("click", "img", function(){
+                $(this).attr("src", "./pokeball.png");
+                $(this).stop();
+                $(this).css("pointer-events", "none");
+                score++;
+                $("#score").text(score);
+            })
+        })
+    </script>
+</body>
+</html>
